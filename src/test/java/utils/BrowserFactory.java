@@ -1,10 +1,13 @@
 package utils;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.qameta.allure.Step;
+
 import java.io.InputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.WebDriver;
@@ -14,6 +17,11 @@ public class BrowserFactory {
     private static final int IMPLICIT_WAIT_SECONDS = 5;
 
     static {
+        loadProperties();
+    }
+
+    @Step("Загрузка конфигурации")
+    private static void loadProperties() {
         try (InputStream input = BrowserFactory.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (input != null) {
                 properties.load(input);
@@ -23,6 +31,7 @@ public class BrowserFactory {
         }
     }
 
+    @Step("Получение браузера")
     public static WebDriver getDriver() {
         String browser = System.getProperty("browser",
                         properties.getProperty("browser", "chrome"))
@@ -44,6 +53,7 @@ public class BrowserFactory {
         return driver;
     }
 
+    @Step("Запуск браузера Yandex")
     private static WebDriver startYandexBrowser() {
         System.setProperty("webdriver.chrome.silentOutput", "true");
         java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(java.util.logging.Level.OFF);
@@ -56,8 +66,8 @@ public class BrowserFactory {
         return new ChromeDriver(options);
     }
 
+    @Step("Запуск Chrome")
     private static WebDriver startChrome() {
-
         System.setProperty("webdriver.chrome.silentOutput", "true");
         java.util.logging.Logger.getLogger("org.openqa.selenium").setLevel(java.util.logging.Level.OFF);
 
@@ -70,7 +80,7 @@ public class BrowserFactory {
                 "--no-sandbox",
                 "--disable-blink-features=AutomationControlled",
                 "--disable-logging",
-                "--log-level=3"  // Минимальный уровень логов
+                "--log-level=3"
         );
 
         options.setExperimentalOption("excludeSwitches",
